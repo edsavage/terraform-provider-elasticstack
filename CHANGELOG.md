@@ -56,6 +56,7 @@ resource "elasticstack_kibana_security_detection_rule" "test" {
 ### Added
 
 - **Experimental:** `elasticstack_kibana_dashboard` now exposes `viz_config.by_reference` for `vis` panels (saved Lens by reference): `ref_id`, optional `references_json`, optional structured `drilldowns`, required `time_range`, and the same presentation fields as `lens_dashboard_app_config.by_reference`, symmetric with `lens_dashboard_app_config`.
+- Add `elasticstack_elasticsearch_ml_calendar` and `elasticstack_elasticsearch_ml_calendar_event` resources for ML calendars and scheduled calendar events ([#1969](https://github.com/elastic/terraform-provider-elasticstack/pull/1969))
 
 ### Changes
 
