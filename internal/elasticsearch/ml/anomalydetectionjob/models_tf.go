@@ -395,9 +395,14 @@ func (plan *TFModel) fromAPIModel(ctx context.Context, apiModel *APIModel) diag.
 
 	var calDiags diag.Diagnostics
 	if len(apiModel.Calendars) == 0 {
-		// Always reflect empty API membership as an empty set (not the prior TF value) so
-		// refresh/import match Elasticsearch and empty `calendars` in config.
-		plan.Calendars, calDiags = types.SetValueFrom(ctx, types.StringType, []string{})
+		// When Terraform omits `calendars`, the planned value is null; keep null so apply
+		// matches Elasticsearch having no calendar assignments. When the attribute is set
+		// (including explicit empty `[]` / `toset([])`), use an empty set.
+		if plan.Calendars.IsNull() {
+			plan.Calendars = types.SetNull(types.StringType)
+		} else {
+			plan.Calendars, calDiags = types.SetValueFrom(ctx, types.StringType, []string{})
+		}
 	} else {
 		plan.Calendars, calDiags = typeutils.NonEmptySetOrDefault(ctx, plan.Calendars, types.StringType, apiModel.Calendars)
 	}
