@@ -57,6 +57,7 @@ resource "elasticstack_kibana_security_detection_rule" "test" {
 
 - **Experimental:** `elasticstack_kibana_dashboard` now exposes `viz_config.by_reference` for `vis` panels (saved Lens by reference): `ref_id`, optional `references_json`, optional structured `drilldowns`, required `time_range`, and the same presentation fields as `lens_dashboard_app_config.by_reference`, symmetric with `lens_dashboard_app_config`.
 - Add `elasticstack_elasticsearch_ml_calendar` and `elasticstack_elasticsearch_ml_calendar_event` resources for ML calendars and scheduled calendar events ([#1969](https://github.com/elastic/terraform-provider-elasticstack/pull/1969))
+- Add `elasticstack_elasticsearch_ml_calendar_job` resource to assign one anomaly detection job to an ML calendar (`PUT _ml/calendars/{calendar_id}/jobs/{job_id}`) ([#2933](https://github.com/elastic/terraform-provider-elasticstack/pull/2933))
 
 ### Changes
 
@@ -82,7 +83,6 @@ resource "elasticstack_kibana_security_detection_rule" "test" {
 - Poll for job closed state before deleting ML anomaly detection job to eliminate HTTP 409 version_conflict_engine_exception on teardown ([#2669](https://github.com/elastic/terraform-provider-elasticstack/pull/2669))
 - Add `elasticstack_elasticsearch_ml_filter` resource for managing Elasticsearch ML filters (used with anomaly detection `custom_rules`). ([#1970](https://github.com/elastic/terraform-provider-elasticstack/pull/1970))
 - Add optional `scope` on `elasticstack_elasticsearch_ml_anomaly_detection_job` detector `custom_rules` blocks (map of analysis field names to ML `filter_id` and optional `filter_type`). ([#2877](https://github.com/elastic/terraform-provider-elasticstack/pull/2877))
-- Add optional `calendars` on `elasticstack_elasticsearch_ml_anomaly_detection_job` to assign the job to ML calendars (via `_ml/calendars/{calendar_id}/jobs/{job_id}`). ([#2913](https://github.com/elastic/terraform-provider-elasticstack/pull/2913))
 - Adds `elasticstack_fleet_proxy` resource for managing fleet proxies ([#2364](https://github.com/elastic/terraform-provider-elasticstack/pull/2364))
 - `elasticstack_fleet_integration` now syncs `space_id` from Fleet on both create and read, preventing state drift that caused unexpected forced replacements. ([#2582](https://github.com/elastic/terraform-provider-elasticstack/pull/2582))
 - Add space-aware Kibana asset management for elasticstack_fleet_integration on Kibana >= 8.15.0 ([#2608](https://github.com/elastic/terraform-provider-elasticstack/pull/2608))
