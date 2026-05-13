@@ -40,6 +40,7 @@ type TFModel struct {
 	JobID                   types.String `tfsdk:"job_id"`
 	Description             types.String `tfsdk:"description"`
 	Groups                  types.Set    `tfsdk:"groups"`
+	Calendars               types.Set    `tfsdk:"calendars"`
 	// AnalysisConfig is required in configuration, but can be null in state during import.
 	AnalysisConfig                       *AnalysisConfigTFModel `tfsdk:"analysis_config"`
 	AnalysisLimits                       types.Object           `tfsdk:"analysis_limits"`
@@ -160,6 +161,13 @@ func (plan *TFModel) toAPIModel(ctx context.Context) (*APIModel, diag.Diagnostic
 		d := plan.Groups.ElementsAs(ctx, &groups, false)
 		diags.Append(d...)
 		apiModel.Groups = groups
+	}
+
+	if typeutils.IsKnown(plan.Calendars) {
+		var cals []string
+		d := plan.Calendars.ElementsAs(ctx, &cals, false)
+		diags.Append(d...)
+		apiModel.Calendars = cals
 	}
 
 	if plan.AnalysisConfig == nil {
@@ -384,6 +392,14 @@ func (plan *TFModel) fromAPIModel(ctx context.Context, apiModel *APIModel) diag.
 	var groupDiags diag.Diagnostics
 	plan.Groups, groupDiags = typeutils.NonEmptySetOrDefault(ctx, plan.Groups, types.StringType, apiModel.Groups)
 	diags.Append(groupDiags...)
+
+	if len(apiModel.Calendars) > 0 {
+		calSet, calDiags := calendarsToTFSet(ctx, apiModel.Calendars)
+		diags.Append(calDiags...)
+		plan.Calendars = calSet
+	} else {
+		plan.Calendars = types.SetNull(types.StringType)
+	}
 
 	// Convert optional fields
 	plan.AllowLazyOpen = types.BoolPointerValue(apiModel.AllowLazyOpen)
@@ -669,4 +685,26 @@ func (plan *TFModel) convertModelPlotConfigFromAPI(ctx context.Context, apiModel
 	modelPlotConfigObjectValue, d := types.ObjectValueFrom(ctx, getModelPlotConfigAttrTypes(ctx), modelPlotConfigTF)
 	diags.Append(d...)
 	return modelPlotConfigObjectValue
+}
+
+func calendarsToTFSet(_ context.Context, ids []string) (types.Set, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	elems := make([]attr.Value, 0, len(ids))
+	for _, id := range ids {
+		elems = append(elems, types.StringValue(id))
+	}
+	s, d := types.SetValue(types.StringType, elems)
+	diags.Append(d...)
+	return s, diags
+}
+
+func calendarIDsFromTFSet(ctx context.Context, s types.Set) ([]string, diag.Diagnostics) {
+	var diags diag.Diagnostics
+	if !typeutils.IsKnown(s) || s.IsNull() {
+		return nil, diags
+	}
+	var out []string
+	d := s.ElementsAs(ctx, &out, false)
+	diags.Append(d...)
+	return out, diags
 }
