@@ -39,7 +39,7 @@ type calendarJobResource struct {
 	*entitycore.ElasticsearchResource[TFModel]
 }
 
-func updateCalendarJobNoOp(_ context.Context, _ *clients.ElasticsearchScopedClient, _ string, plan TFModel) (TFModel, diag.Diagnostics) {
+func updateCalendarJobNoOp(_ context.Context, _ *clients.ElasticsearchScopedClient, _ string, plan TFModel, _ TFModel) (TFModel, diag.Diagnostics) {
 	return plan, nil
 }
 
