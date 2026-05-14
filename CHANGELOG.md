@@ -52,6 +52,10 @@ resource "elasticstack_kibana_security_detection_rule" "test" {
 }
 ```
 
+### Added
+
+- Add `elasticstack_elasticsearch_ml_calendar_job` resource to assign one anomaly detection job to an ML calendar (`PUT _ml/calendars/{calendar_id}/jobs/{job_id}`) ([#2933](https://github.com/elastic/terraform-provider-elasticstack/pull/2933))
+
 ### Changes
 
 - Fleet resources now retry on HTTP 409 Conflict with exponential backoff, resolving failures when running `terraform apply` with `parallelism > 1`. ([#2911](https://github.com/elastic/terraform-provider-elasticstack/pull/2911))

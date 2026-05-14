@@ -22,7 +22,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-framework/types"
 )
 
-// TFModel is the Terraform state for a single calendar–job assignment.
+// TFModel is the Terraform state for a single calendar–job (or calendar–group) assignment.
 type TFModel struct {
 	ID                      types.String `tfsdk:"id"`
 	ElasticsearchConnection types.List   `tfsdk:"elasticsearch_connection"`
@@ -36,7 +36,8 @@ func (m TFModel) GetID() types.String { return m.ID }
 // GetResourceID implements entitycore.ElasticsearchResourceModel.
 // It returns "<calendar_id>|<job_id>" for the composite Elasticsearch resource ID segment
 // (the part after the cluster UUID). A pipe is used because the composite ID format only
-// allows a single slash separating cluster from resource identifier.
+// allows a single slash separating cluster from resource identifier. The second segment is
+// the same string sent to Elasticsearch as `job_id` (job identifier or job group name).
 func (m TFModel) GetResourceID() types.String {
 	if !typeutils.IsKnown(m.CalendarID) || !typeutils.IsKnown(m.JobID) {
 		return types.StringUnknown()
@@ -47,7 +48,7 @@ func (m TFModel) GetResourceID() types.String {
 	c := m.CalendarID.ValueString()
 	j := m.JobID.ValueString()
 	if c == "" || j == "" {
-		return types.StringValue("")
+		return types.StringUnknown()
 	}
 	return types.StringValue(c + "|" + j)
 }

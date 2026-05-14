@@ -37,10 +37,11 @@ const (
 
 func getSchema(_ context.Context) schema.Schema {
 	return schema.Schema{
-		MarkdownDescription: "Assigns a single anomaly detection job to an ML calendar using " +
+		MarkdownDescription: "Assigns a single anomaly detection **job or job group** to an ML calendar using " +
 			"`PUT _ml/calendars/{calendar_id}/jobs/{job_id}` (and removes it on destroy). " +
-			"The computed `id` is `<cluster_uuid>/<calendar_id>|<job_id>` (a pipe separates calendar and job because the composite ID only allows one slash). " +
-			"See the [ML put calendar job API](https://www.elastic.co/docs/api/doc/elasticsearch/operation/operation-ml-put-calendar-job) for details.",
+			"The `job_id` value is the same path parameter Elasticsearch accepts: a job identifier or a job group name (see the Elasticsearch REST API operation `ml.put_calendar_job`). " +
+			"This resource models **one** identifier per instance (comma-separated lists in the API are not valid for the Terraform `job_id` attribute). " +
+			"The computed `id` is `<cluster_uuid>/<calendar_id>|<job_id>` (a pipe separates calendar and job because the composite ID only allows one slash).",
 		Attributes: map[string]schema.Attribute{
 			"id": schema.StringAttribute{
 				MarkdownDescription: "Internal composite identifier of the resource.",
@@ -59,21 +60,23 @@ func getSchema(_ context.Context) schema.Schema {
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(1, 64),
 					stringvalidator.RegexMatches(
-						regexp.MustCompile(`^[a-z0-9]([a-z0-9_-]*[a-z0-9])?$|^[a-z0-9]$`),
+						regexp.MustCompile(`^[a-z0-9]([a-z0-9_-]*[a-z0-9])?$`),
 						calendarIDAllowedCharsMessage,
 					),
 				},
 			},
 			"job_id": schema.StringAttribute{
-				MarkdownDescription: "Identifier of the anomaly detection job to attach to the calendar.",
-				Required:            true,
+				MarkdownDescription: "Anomaly detection **job identifier** or **job group name** to attach " +
+					"to the calendar, matching Elasticsearch `PUT .../jobs/{job_id}` (one value per resource; " +
+					"not a comma-separated list).",
+				Required: true,
 				PlanModifiers: []planmodifier.String{
 					stringplanmodifier.RequiresReplace(),
 				},
 				Validators: []validator.String{
 					stringvalidator.LengthBetween(1, 64),
 					stringvalidator.RegexMatches(
-						regexp.MustCompile(`^[a-z0-9][a-z0-9_-]*[a-z0-9]$|^[a-z0-9]$`),
+						regexp.MustCompile(`^[a-z0-9]([a-z0-9_-]*[a-z0-9])?$`),
 						jobIDAllowedCharsMessage,
 					),
 				},
