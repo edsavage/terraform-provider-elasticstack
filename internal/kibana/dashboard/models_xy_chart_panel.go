@@ -1300,8 +1300,13 @@ func (m *xyChartConfigModel) fromAPINoESQL(ctx context.Context, dashboard *dashb
 	legendDiags := m.Legend.fromAPI(ctx, apiChart.Legend)
 	diags.Append(legendDiags...)
 
-	m.Query = &filterSimpleModel{}
-	m.Query.fromAPI(apiChart.Query)
+	// Preserve nil query when prior state omitted it (query is optional in schema).
+	if prior != nil && prior.Query == nil {
+		m.Query = nil
+	} else {
+		m.Query = &filterSimpleModel{}
+		m.Query.fromAPI(apiChart.Query)
+	}
 
 	m.Filters = populateFiltersFromAPI(apiChart.Filters, &diags)
 
@@ -1393,7 +1398,7 @@ func (m *xyChartConfigModel) fromAPIESQL(ctx context.Context, dashboard *dashboa
 func alignXYChartStateFromPlanPanels(planPanels, statePanels []panelModel) {
 	n := min(len(statePanels), len(planPanels))
 	for i := range n {
-		pp, sp := xyChartConfigFromLensOrVizPlanPanel(planPanels[i]), xyChartConfigFromLensOrVizPlanPanel(statePanels[i])
+		pp, sp := xyChartConfigFromLensOrVisPlanPanel(planPanels[i]), xyChartConfigFromLensOrVisPlanPanel(statePanels[i])
 		if pp == nil || sp == nil {
 			continue
 		}
@@ -1401,9 +1406,9 @@ func alignXYChartStateFromPlanPanels(planPanels, statePanels []panelModel) {
 	}
 }
 
-func xyChartConfigFromLensOrVizPlanPanel(pm panelModel) *xyChartConfigModel {
-	if pm.VizConfig != nil && pm.VizConfig.ByValue != nil && pm.VizConfig.ByValue.XYChartConfig != nil {
-		return pm.VizConfig.ByValue.XYChartConfig
+func xyChartConfigFromLensOrVisPlanPanel(pm panelModel) *xyChartConfigModel {
+	if pm.VisConfig != nil && pm.VisConfig.ByValue != nil && pm.VisConfig.ByValue.XYChartConfig != nil {
+		return pm.VisConfig.ByValue.XYChartConfig
 	}
 	if pm.LensDashboardAppConfig != nil && pm.LensDashboardAppConfig.ByValue != nil &&
 		pm.LensDashboardAppConfig.ByValue.XYChartConfig != nil {

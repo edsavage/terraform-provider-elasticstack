@@ -25,7 +25,7 @@ resource "elasticstack_kibana_dashboard" "test" {
       w = 24
       h = 15
     }
-    viz_config = {
+    vis_config = {
       by_value = {
         pie_chart_config = {
           title       = "Pie presentation acc"
@@ -55,7 +55,7 @@ resource "elasticstack_kibana_dashboard" "test" {
           }
           metrics = [
             {
-              config = jsonencode({
+              config_json = jsonencode({
                 operation = "count"
                 format    = { type = "number" }
               })
@@ -63,7 +63,7 @@ resource "elasticstack_kibana_dashboard" "test" {
           ]
           group_by = [
             {
-              config = jsonencode({
+              config_json = jsonencode({
                 operation = "terms"
                 fields    = ["DestCountry"]
                 color = {

@@ -25,7 +25,7 @@ resource "elasticstack_kibana_dashboard" "test" {
       w = 24
       h = 15
     }
-    viz_config = {
+    vis_config = {
       by_value = {
         heatmap_config = {
           title       = "Sample Heatmap"
@@ -44,18 +44,6 @@ resource "elasticstack_kibana_dashboard" "test" {
             operation = "count"
           })
           x_axis_json = jsonencode({
-            operation = "filters"
-            filters = [
-              {
-                label = "All"
-                filter = {
-                  expression = "*"
-                  language   = "kql"
-                }
-              }
-            ]
-          })
-          y_axis_json = jsonencode({
             operation = "filters"
             filters = [
               {

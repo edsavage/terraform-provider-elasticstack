@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/elastic/terraform-provider-elasticstack/internal/acctest"
+	"github.com/elastic/terraform-provider-elasticstack/internal/acctest/checks"
 	"github.com/elastic/terraform-provider-elasticstack/internal/versionutils"
 	"github.com/hashicorp/terraform-plugin-testing/config"
 	sdkacctest "github.com/hashicorp/terraform-plugin-testing/helper/acctest"
@@ -37,12 +38,13 @@ const (
 func TestAccResourceDashboardRootSavedFilters(t *testing.T) {
 	dashboardTitle := "Test Dashboard root filters " + sdkacctest.RandStringFromCharSet(6, sdkacctest.CharSetAlphaNum)
 
+	versionutils.SkipIfUnsupported(t, minDashboardAPISupport, versionutils.FlavorAny)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { acctest.PreCheck(t) },
 		Steps: []resource.TestStep{
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("initial"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -51,13 +53,12 @@ func TestAccResourceDashboardRootSavedFilters(t *testing.T) {
 					resource.TestCheckResourceAttrSet("elasticstack_kibana_dashboard.test", "id"),
 					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "title", dashboardTitle),
 					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "filters.#", "2"),
-					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "filters.0.filter_json", accDashboardRootFilterHostCanonical),
-					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "filters.1.filter_json", accDashboardRootFilterServiceCanonical),
+					checks.TestCheckResourceAttrJSONSubset("elasticstack_kibana_dashboard.test", "filters.0.filter_json", accDashboardRootFilterHostCanonical),
+					checks.TestCheckResourceAttrJSONSubset("elasticstack_kibana_dashboard.test", "filters.1.filter_json", accDashboardRootFilterServiceCanonical),
 				),
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("initial"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -66,7 +67,6 @@ func TestAccResourceDashboardRootSavedFilters(t *testing.T) {
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("initial"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -78,7 +78,6 @@ func TestAccResourceDashboardRootSavedFilters(t *testing.T) {
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("reordered"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -86,13 +85,12 @@ func TestAccResourceDashboardRootSavedFilters(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("elasticstack_kibana_dashboard.test", "id"),
 					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "filters.#", "2"),
-					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "filters.0.filter_json", accDashboardRootFilterServiceCanonical),
-					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "filters.1.filter_json", accDashboardRootFilterHostCanonical),
+					checks.TestCheckResourceAttrJSONSubset("elasticstack_kibana_dashboard.test", "filters.0.filter_json", accDashboardRootFilterServiceCanonical),
+					checks.TestCheckResourceAttrJSONSubset("elasticstack_kibana_dashboard.test", "filters.1.filter_json", accDashboardRootFilterHostCanonical),
 				),
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("reordered"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -101,7 +99,6 @@ func TestAccResourceDashboardRootSavedFilters(t *testing.T) {
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("reordered"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -113,7 +110,6 @@ func TestAccResourceDashboardRootSavedFilters(t *testing.T) {
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("three_filters"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -121,14 +117,13 @@ func TestAccResourceDashboardRootSavedFilters(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("elasticstack_kibana_dashboard.test", "id"),
 					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "filters.#", "3"),
-					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "filters.0.filter_json", accDashboardRootFilterServiceCanonical),
-					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "filters.1.filter_json", accDashboardRootFilterHostCanonical),
-					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "filters.2.filter_json", accDashboardRootFilterPodCanonical),
+					checks.TestCheckResourceAttrJSONSubset("elasticstack_kibana_dashboard.test", "filters.0.filter_json", accDashboardRootFilterServiceCanonical),
+					checks.TestCheckResourceAttrJSONSubset("elasticstack_kibana_dashboard.test", "filters.1.filter_json", accDashboardRootFilterHostCanonical),
+					checks.TestCheckResourceAttrJSONSubset("elasticstack_kibana_dashboard.test", "filters.2.filter_json", accDashboardRootFilterPodCanonical),
 				),
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("three_filters"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -142,12 +137,13 @@ func TestAccResourceDashboardRootSavedFilters(t *testing.T) {
 func TestAccResourceDashboardRootSavedFilters_unset(t *testing.T) {
 	dashboardTitle := "Test Dashboard root filters unset " + sdkacctest.RandStringFromCharSet(6, sdkacctest.CharSetAlphaNum)
 
+	versionutils.SkipIfUnsupported(t, minDashboardAPISupport, versionutils.FlavorAny)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { acctest.PreCheck(t) },
 		Steps: []resource.TestStep{
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("initial"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -160,7 +156,6 @@ func TestAccResourceDashboardRootSavedFilters_unset(t *testing.T) {
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("initial"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -169,7 +164,6 @@ func TestAccResourceDashboardRootSavedFilters_unset(t *testing.T) {
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("initial"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),

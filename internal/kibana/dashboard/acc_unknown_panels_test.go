@@ -24,10 +24,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"regexp"
 	"testing"
 
 	"github.com/elastic/terraform-provider-elasticstack/internal/acctest"
+	"github.com/elastic/terraform-provider-elasticstack/internal/acctest/checks"
 	"github.com/elastic/terraform-provider-elasticstack/internal/clients"
 	"github.com/elastic/terraform-provider-elasticstack/internal/versionutils"
 	"github.com/hashicorp/terraform-plugin-testing/config"
@@ -46,12 +46,13 @@ func TestAccResourceDashboardUnknownPanel(t *testing.T) {
 
 	var dashboardID string
 
+	versionutils.SkipIfUnsupported(t, minDashboardAPISupport, versionutils.FlavorAny)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { acctest.PreCheck(t) },
 		Steps: []resource.TestStep{
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("create"),
 				ConfigVariables: config.Variables{
 					"dashboard_title": config.StringVariable(dashboardTitle),
@@ -74,15 +75,7 @@ func TestAccResourceDashboardUnknownPanel(t *testing.T) {
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				PreConfig: func() {
-					notSupported, err := versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport)()
-					if err != nil {
-						t.Fatalf("checking version: %v", err)
-					}
-					if notSupported {
-						return
-					}
 					if dashboardID == "" {
 						t.Fatal("dashboardID not set from step 1")
 					}
@@ -107,7 +100,7 @@ func TestAccResourceDashboardUnknownPanel(t *testing.T) {
 					resource.TestCheckResourceAttr("elasticstack_kibana_dashboard.test", "panels.0.grid.h", "15"),
 					resource.TestCheckResourceAttrSet("elasticstack_kibana_dashboard.test", "panels.0.id"),
 					resource.TestCheckResourceAttrSet("elasticstack_kibana_dashboard.test", "panels.0.config_json"),
-					resource.TestMatchResourceAttr("elasticstack_kibana_dashboard.test", "panels.0.config_json", regexp.MustCompile(`"image_config"\s*:`)),
+					checks.TestCheckResourceAttrJSONSubset("elasticstack_kibana_dashboard.test", "panels.0.config_json", `{"image_config":{}}`),
 				),
 			},
 		},

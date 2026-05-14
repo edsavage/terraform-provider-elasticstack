@@ -34,12 +34,13 @@ const lensAppByRefDashboard = "elasticstack_kibana_dashboard.test"
 func TestAccResourceDashboardLensDashboardAppByReference_dashboardDrilldown(t *testing.T) {
 	dashboardTitle := "Acc lens dd dash " + sdkacctest.RandStringFromCharSet(4, sdkacctest.CharSetAlphaNum)
 	p := "panels.0.lens_dashboard_app_config.by_reference.drilldowns.0.dashboard"
+	versionutils.SkipIfUnsupported(t, minDashboardAPISupport, versionutils.FlavorAny)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { acctest.PreCheck(t) },
 		Steps: []resource.TestStep{
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
 				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
 				Check: resource.ComposeTestCheckFunc(
@@ -56,11 +57,22 @@ func TestAccResourceDashboardLensDashboardAppByReference_dashboardDrilldown(t *t
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
 				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
 				ConfigPlanChecks: resource.ConfigPlanChecks{
 					PreApply: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				ProtoV6ProviderFactories: acctest.Providers,
+				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
+				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
+				ResourceName:             lensAppByRefDashboard,
+				ImportState:              true,
+				ImportStateVerify:        true,
+				ImportStateVerifyIgnore: []string{
+					"panels.0.lens_dashboard_app_config.by_reference.references_json",
+					"panels.0.id",
 				},
 			},
 		},
@@ -70,12 +82,13 @@ func TestAccResourceDashboardLensDashboardAppByReference_dashboardDrilldown(t *t
 func TestAccResourceDashboardLensDashboardAppByReference_discoverDrilldown(t *testing.T) {
 	dashboardTitle := "Acc lens dd disc " + sdkacctest.RandStringFromCharSet(4, sdkacctest.CharSetAlphaNum)
 	p := "panels.0.lens_dashboard_app_config.by_reference.drilldowns.0.discover"
+	versionutils.SkipIfUnsupported(t, minDashboardAPISupport, versionutils.FlavorAny)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { acctest.PreCheck(t) },
 		Steps: []resource.TestStep{
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
 				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
 				Check: resource.ComposeTestCheckFunc(
@@ -89,11 +102,22 @@ func TestAccResourceDashboardLensDashboardAppByReference_discoverDrilldown(t *te
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
 				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
 				ConfigPlanChecks: resource.ConfigPlanChecks{
 					PreApply: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				ProtoV6ProviderFactories: acctest.Providers,
+				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
+				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
+				ResourceName:             lensAppByRefDashboard,
+				ImportState:              true,
+				ImportStateVerify:        true,
+				ImportStateVerifyIgnore: []string{
+					"panels.0.lens_dashboard_app_config.by_reference.references_json",
+					"panels.0.id",
 				},
 			},
 		},
@@ -103,12 +127,13 @@ func TestAccResourceDashboardLensDashboardAppByReference_discoverDrilldown(t *te
 func TestAccResourceDashboardLensDashboardAppByReference_urlDrilldownExplicitTrigger(t *testing.T) {
 	dashboardTitle := "Acc lens dd urle " + sdkacctest.RandStringFromCharSet(4, sdkacctest.CharSetAlphaNum)
 	p := "panels.0.lens_dashboard_app_config.by_reference.drilldowns.0.url"
+	versionutils.SkipIfUnsupported(t, minDashboardAPISupport, versionutils.FlavorAny)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { acctest.PreCheck(t) },
 		Steps: []resource.TestStep{
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
 				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
 				Check: resource.ComposeTestCheckFunc(
@@ -123,11 +148,22 @@ func TestAccResourceDashboardLensDashboardAppByReference_urlDrilldownExplicitTri
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
 				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
 				ConfigPlanChecks: resource.ConfigPlanChecks{
 					PreApply: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				ProtoV6ProviderFactories: acctest.Providers,
+				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
+				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
+				ResourceName:             lensAppByRefDashboard,
+				ImportState:              true,
+				ImportStateVerify:        true,
+				ImportStateVerifyIgnore: []string{
+					"panels.0.lens_dashboard_app_config.by_reference.references_json",
+					"panels.0.id",
 				},
 			},
 		},
@@ -137,12 +173,13 @@ func TestAccResourceDashboardLensDashboardAppByReference_urlDrilldownExplicitTri
 func TestAccResourceDashboardLensDashboardAppByReference_urlDrilldown_triggerRequired_planRejected(t *testing.T) {
 	dashboardTitle := "Acc lens dd trig req " + sdkacctest.RandStringFromCharSet(4, sdkacctest.CharSetAlphaNum)
 	triggerRequired := regexp.MustCompile(`(?i)trigger`)
+	versionutils.SkipIfUnsupported(t, minDashboardAPISupport, versionutils.FlavorAny)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { acctest.PreCheck(t) },
 		Steps: []resource.TestStep{
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
 				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
 				PlanOnly:                 true,
@@ -155,12 +192,13 @@ func TestAccResourceDashboardLensDashboardAppByReference_urlDrilldown_triggerReq
 func TestAccResourceDashboardLensDashboardAppByReference_mixedDrilldowns(t *testing.T) {
 	dashboardTitle := "Acc lens dd mix " + sdkacctest.RandStringFromCharSet(4, sdkacctest.CharSetAlphaNum)
 	dd := "panels.0.lens_dashboard_app_config.by_reference.drilldowns"
+	versionutils.SkipIfUnsupported(t, minDashboardAPISupport, versionutils.FlavorAny)
+
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() { acctest.PreCheck(t) },
 		Steps: []resource.TestStep{
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
 				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
 				Check: resource.ComposeTestCheckFunc(
@@ -179,11 +217,22 @@ func TestAccResourceDashboardLensDashboardAppByReference_mixedDrilldowns(t *test
 			},
 			{
 				ProtoV6ProviderFactories: acctest.Providers,
-				SkipFunc:                 versionutils.CheckIfVersionIsUnsupported(minDashboardAPISupport),
 				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
 				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
 				ConfigPlanChecks: resource.ConfigPlanChecks{
 					PreApply: []plancheck.PlanCheck{plancheck.ExpectEmptyPlan()},
+				},
+			},
+			{
+				ProtoV6ProviderFactories: acctest.Providers,
+				ConfigDirectory:          acctest.NamedTestCaseDirectory("basic"),
+				ConfigVariables:          config.Variables{"dashboard_title": config.StringVariable(dashboardTitle)},
+				ResourceName:             lensAppByRefDashboard,
+				ImportState:              true,
+				ImportStateVerify:        true,
+				ImportStateVerifyIgnore: []string{
+					"panels.0.lens_dashboard_app_config.by_reference.references_json",
+					"panels.0.id",
 				},
 			},
 		},
